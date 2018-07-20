@@ -29,6 +29,7 @@ def parseDice(form):
             rolls.append(random.randint(1,sides))
         return (rolls)
 
+# Loop for picking the module
 while True:
 
     module = raw_input("Select module:\n1. Dice roller\n2. Test dice roller\n")
@@ -38,6 +39,7 @@ while True:
         print("Dice roller selected.")
         go = True
 
+        # Loop for module 1
         while go:
             input = raw_input("Roll condition: ")
             input = cleanse(input)
@@ -82,6 +84,7 @@ while True:
                 else:
                     print result
 
+    # Every while loop should have an exit condition
     elif module == 'exit' or module == 'quit' :
         print("Goodbye.")
         break
