@@ -12,21 +12,29 @@ def parseDice(form):
     if form.count('+') == 0 and form.count('-') == 0:
         if form.count('d') >= 2:
             return []
-        else:
+        elif form.count('d') == 1:
             request = form.split('d')
+            for i in request[0]:
+                if i.isdigit() == False:
+                    return []
+            for i in request[1]:
+                if i.isdigit() == False:
+                    return []
+        else:
+            request = [form]
+            for i in request[0]:
+                if i.isdigit() == False:
+                    return []
 
-        for i in request[0]:
-            if i.isdigit() == False:
-                return []
-        for i in request[1]:
-            if i.isdigit() == False:
-                return []
+        if len(request) == 1:
+            rolls = request
+        else:
+            n = int(request[0])
+            sides = int(request[1])
+            rolls = []
+            for i in range(n):
+                rolls.append(random.randint(1,sides))
 
-        n = int(request[0])
-        sides = int(request[1])
-        rolls = []
-        for i in range(n):
-            rolls.append(random.randint(1,sides))
         return (rolls)
 
 def roller():
@@ -48,7 +56,7 @@ def roller():
             verify = True
         elif input.count('-') == 1:
             form = input.split('-')
-            request = form[0].split('d')
+            dice = form[0]
             bonus = 0 - int(form[1].replace(" ",""))
             verify = True
         else:
