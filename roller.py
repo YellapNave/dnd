@@ -1,4 +1,5 @@
 import random
+import re
 
 # Take an input and remove all the spaces, then convert it entirely to lowercase.
 def cleanse(input):
@@ -36,6 +37,21 @@ def parseDice(form):
                 rolls.append(random.randint(1,sides))
 
         return (rolls)
+
+def processUnit(unit):
+    dice = re.search('[0-9]*d[0-9]*', unit)
+    if dice:
+        print parseDice(dice.group())
+
+def splitDice(unit):
+    dice = re.search('[0-9]*d[0-9]*', unit)
+    if dice:
+        new = unit.split(dice.group())
+        print(new)
+        print (dice.group())
+        return new.append(dice.group())
+    else:
+        return []
 
 def roller():
     go = True
