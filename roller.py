@@ -1,9 +1,15 @@
 import random
 import re
 
-# Take an input and remove all the spaces, then convert it entirely to lowercase.
+# Take an input and remove all the spaces, then convert it entirely to
+# lowercase. Then, make sure that the last char of the string is a number or
+# letter.
 def cleanse(input):
-    return (input.replace(" ","")).lower()
+    input = (input.replace(" ","")).lower()
+    if re.match('[0-9a-zA-Z]', input[len(input)-1]):
+        return input
+    else:
+        return input[:-1]
 
 # Take a basic dice format, such as 2d4, and output an array of integers equal
 # to the rolls that result. If the input contains more than one 'd', or there is
@@ -47,9 +53,7 @@ def splitDice(unit):
     dice = re.search('[0-9]*d[0-9]*', unit)
     if dice:
         new = unit.split(dice.group())
-        print(new)
-        print (dice.group())
-        return new.append(dice.group())
+        return new + [dice.group()]
     else:
         return []
 
