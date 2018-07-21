@@ -25,8 +25,9 @@ def rollDice(dice):
 # Take a list of dice rolls and the dice that generated those rolls and generate
 # a pretty string
 def parseDice(dice, rolls, bonus):
-    rollStr = ' '.join((str(i) for i in rolls
-    return ((str(sum(rolls)) + ' (' + dice + ')' + ': ' + rollStr))
+    rollStr = ' '.join(str(i) for i in rolls)
+    return(str(sum(rolls) + bonus) + ' (' + dice + '+' + str(bonus) + '): ' + rollStr)
+
 
 def splitDice(unit):
     dice = re.search('[0-9]*d[0-9]*', unit)
@@ -78,7 +79,7 @@ def roller():
                 operator = " - "
             else:
                 operator = " + "
-            result = parseDice(dice, rolls)
+            result = parseDice(dice, rolls, bonus)
             if bonus != 0:
                 print result + operator + str(abs(bonus))
             else:
