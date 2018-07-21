@@ -12,42 +12,21 @@ def cleanse(input):
         return input[:-1]
 
 # Take a basic dice format, such as 2d4, and output an array of integers equal
-# to the rolls that result. If the input contains more than one 'd', or there is
-# a single d with something other than numbers on either side of it, an empty
-# list is returned.
-def parseDice(form):
-    if form.count('+') == 0 and form.count('-') == 0:
-        if form.count('d') >= 2:
-            return []
-        elif form.count('d') == 1:
-            request = form.split('d')
-            for i in request[0]:
-                if i.isdigit() == False:
-                    return []
-            for i in request[1]:
-                if i.isdigit() == False:
-                    return []
-        else:
-            request = [form]
-            for i in request[0]:
-                if i.isdigit() == False:
-                    return []
-
-        if len(request) == 1:
-            rolls = request
-        else:
-            n = int(request[0])
-            sides = int(request[1])
-            rolls = []
-            for i in range(n):
-                rolls.append(random.randint(1,sides))
-
-        return (rolls)
-
-def processUnit(unit):
-    dice = re.search('[0-9]*d[0-9]*', unit)
-    if dice:
-        print parseDice(dice.group())
+# to the rolls that result. 
+def rollDice(dice):
+    request = dice.split('d')
+    n = int(request[0])
+    sides = int(request[1])
+    rolls = []
+    for i in range(n):
+        rolls.append(random.randint(1,sides))
+    return rolls
+    
+# Take a list of dice rolls and the dice that generated those rolls and generate
+# a pretty string
+def parseDice(dice, rolls, bonus):
+    rollStr = ' '.join((str(i) for i in rolls
+    return ((str(sum(rolls)) + ' (' + dice + ')' + ': ' + rollStr))
 
 def splitDice(unit):
     dice = re.search('[0-9]*d[0-9]*', unit)
@@ -89,7 +68,7 @@ def roller():
                 dice = input
                 bonus = 0
 
-        rolls = parseDice(dice)
+        rolls = rollDice(dice)
         if rolls == []:
             print("Error - format not recognized.")
             verify = False
@@ -99,7 +78,7 @@ def roller():
                 operator = " - "
             else:
                 operator = " + "
-            result = str(sum(rolls) + bonus) + ': ' + ' '.join((str(i) for i in rolls))
+            result = parseDice(dice, rolls)
             if bonus != 0:
                 print result + operator + str(abs(bonus))
             else:
