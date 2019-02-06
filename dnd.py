@@ -9,7 +9,8 @@ while True:
 
     if module == '1':
         print("Dice roller selected.")
-        roller.roller()
+        roller = roller.Roller()
+        roller.module()
 
     # Every while loop should have an exit condition
     elif module == 'exit' or module == 'quit' :
