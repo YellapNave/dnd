@@ -11,12 +11,19 @@ def cleanse(input):
         return input
 
 class Roller(object):
-    # Take a basic dice format, such as 2d4, and output an array of integers equal
-    # to the rolls that result.
+    def __init__(self):
+        self.bonus = 0
+
+    # Take list of dice in the form [[positive][negative]] and output an array
+    # of integers equal to the rolls that result.
     def rollDice(self, dice):
         rolls = []
+        print dice
         if len(dice[0]) > 0:
             for roll in dice[0]:
+                if 'd' not in roll:
+                    self.bonus += int(roll)
+                    continue
                 request = roll.split('d')
                 n = int(request[0])
                 sides = int(request[1])
@@ -24,6 +31,9 @@ class Roller(object):
                     rolls.append(random.randint(1,sides))
         if len(dice[1]) > 0:
             for roll in dice[1]:
+                if 'd' not in roll:
+                    self.bonus -= int(roll)
+                    continue
                 request = roll.split('d')
                 n = int(request[0])
                 sides = int(request[1])
@@ -33,23 +43,41 @@ class Roller(object):
 
     # Take a list of dice rolls and the dice that generated those rolls and
     # generate a pretty string
-    def parseDice(self, dice, rolls, bonus):
-        if bonus == 0:
+    def parseDice(self, dice, rolls):
+        if self.bonus == 0:
             op = ''
             strBonus = ''
-        elif bonus >= 1:
+        elif self.bonus >= 1:
             op = '+'
-            strBonus = str(bonus)
+            strBonus = str(self.bonus)
         else:
             op = '-'
-            strBonus = str(abs(bonus))
+            strBonus = str(abs(self.bonus))
         rollStr = ' '.join(str(i) for i in rolls) + " %s %s" % (op, strBonus)
-        posDice = '+'.join(dice[0])
+
+        posList = [] # list of positive dice
+        posNums = ''
+        for n in dice[0]:
+            if 'd' in n:
+                posList.append(n)
+                dice[0].remove(n)
+        posDice = '+'.join(posList)
+        if len(dice[0]) > 0:
+            posNums = "+" + '+'.join(dice[0])
+
+        negList = [] # list of 'negative dice'
+        negNums = ''
         if len(dice[1]) > 0:
-            negDice = "-" + '-'.join(dice[1])
+            for n in dice[1]:
+                if 'd' in n:
+                    negList.append(n)
+                    dice[1].remove(n)
+            negDice = "-" + '-'.join(negList)
+            if len(dice[1]) > 0:
+                negNums = "-" + '-'.join(dice[1])
         else:
             negDice = ''
-        return(str(sum(rolls) + bonus) + ' (' + posDice + negDice + op + strBonus + '): ' + rollStr)
+        return(str(sum(rolls) + self.bonus) + ' (' + posDice + negDice + posNums + negNums + '): ' + rollStr)
 
     # Take multiple dice rolls and return them each as a string in a list, so that
     # '1d10 + 2d6' gives [[1d10, 2d6],[]] and '1d10 + 2d12 - 1d6' gives [[1d10, 2d12],[1d6]]
@@ -59,11 +87,8 @@ class Roller(object):
         for i in pos:
             temp = i.split('-')
             if len(temp) > 1:
-                for j in temp:
-                    if j == temp[0]:
-                        res[0].append(j)
-                    else:
-                        res[1].append(j)
+                res[0].append(temp[0])
+                res[1] += temp[1:]
             else:
                 res[0] += temp
         return res
@@ -79,6 +104,7 @@ class Roller(object):
 
     def module(self):
         go = True
+        verify = True
 
         # Loop for rolling dice
         while go:
@@ -90,37 +116,10 @@ class Roller(object):
                 go = False
                 print("Quitting module.")
                 break
-            elif input.count('d') > 1:
+            elif input.count('d') > 0:
                 dice = self.multiples(input)
-                bonus = 0
-                verify = True
-            elif input.count('+') == 1:
-                form = input.split('+')
-                if 'd' in form[0]:
-                    dice[0].append(form[0])
-                    bonus = int(form[1])
-                else:
-                    dice[0].append(form[1])
-                    bonus = int(form[0])
-                verify = True
-            elif input.count('-') == 1:
-                form = input.split('-')
-                if 'd' in form[0]:
-                    dice[0].append(form[0])
-                    bonus = 0 - int(form[1].replace(" ",""))
-                else:
-                    dice[1].append(form[1])
-                    bonus = int(form[0].replace(" ",""))
-                verify = True
             else:
-                if input.count('-') + input.count('+') > 1:
-                    self.multiples(input)
-                    verify = True
-                    break
-                else:
-                    verify = True
-                    dice[0].append(input)
-                    bonus = 0
+                dice[0].append(input)
 
             rolls = self.rollDice(dice)
 
@@ -129,6 +128,6 @@ class Roller(object):
                 verify = False
 
             if verify:
-                result = self.parseDice(dice, rolls, bonus)
+                result = self.parseDice(dice, rolls)
+                self.bonus = 0
                 print result
-                return result
