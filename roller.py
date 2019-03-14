@@ -18,7 +18,6 @@ class Roller(object):
     # of integers equal to the rolls that result.
     def rollDice(self, dice):
         rolls = []
-        print dice
         if len(dice[0]) > 0:
             for roll in dice[0]:
                 if 'd' not in roll:
